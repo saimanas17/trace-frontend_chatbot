@@ -1,6 +1,11 @@
 import streamlit as st
 import time
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+RAG_API_BASE_URL = os.getenv("RAG_API_BASE_URL")
 
 st.set_page_config(page_title="Professor Q&A Bot", page_icon="🤖")
 
@@ -10,7 +15,7 @@ st.markdown("Ask a question about any professor based on TRACE survey data.")
 @st.cache_data
 def get_professors():
     try:
-        response = requests.get("http://rag-api:8000/professors")  # Use your RAG API service name or IP
+        response = requests.get(f"{RAG_API_BASE_URL}/professors") # Use your RAG API service name or IP
         response.raise_for_status()
         return response.json()
     except Exception as e:
@@ -50,7 +55,7 @@ if user_input:
     # 🔁 Pass full history and selected professor
     try:
         response = requests.post(
-            "http://rag-api:8000/rag/ask",  # Update this URL based on your deployment
+            f"{RAG_API_BASE_URL}/rag/ask", # Update this URL based on your deployment
             json={
                 "question": user_input,
                 "history": st.session_state.chat_history,
